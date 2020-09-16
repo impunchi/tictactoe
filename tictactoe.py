@@ -22,6 +22,7 @@ class Button:
         self.text = text
         self.arrayX = arrayX
         self.arrayY = arrayY
+        self.draw()
 
     def draw(self):
         # draw button -> rect (distance to left border, distance to top border, width, height)
@@ -95,10 +96,6 @@ for x in range(3):
 for x in range(3):
     i = Button((255, 255, 255), 10+x*110, 230, 100, 100, 2, x)
     buttons.append(i)
-
-# draw all buttons
-for x in range(9):
-    buttons[x].draw()
 
 # true as long as the game runs
 running = True
