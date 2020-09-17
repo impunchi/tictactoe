@@ -17,5 +17,5 @@ I will try to update this project and implement as many features as possible, to
 
 Things that are already on my list:
 - show a score for both players :heavy_check_mark:
-- reset match when it ends in a draw
+- reset match when it ends in a draw :heavy_check_mark:
 - reset match and score through an option of the menu bar 

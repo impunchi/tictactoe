@@ -54,11 +54,9 @@ class Button:
         self.draw()
 
     def getArrayX(self):
-        print(self.arrayX)
         return self.arrayX
 
     def getArrayY(self):
-        print(self.arrayY)
         return self.arrayY
 
 # change title
@@ -108,6 +106,13 @@ def check(field, x, y):
         return True
     return False
 
+def draw(field):
+    for y in range(3):
+        for x in range(3):
+            if field[x][y] == 0:
+                return False
+    return True
+
 def win(field):
     
     # check rows
@@ -147,9 +152,7 @@ while running:
                     if buttons[x].detect(pygame.mouse.get_pos()):
                         if(check(tictactoe, buttons[x].getArrayY(), buttons[x].getArrayX())):
                             if player1_turn:
-                                #print(x)
                                 tictactoe[buttons[x].getArrayY()][buttons[x].getArrayX()] = "X"
-                                #print(tictactoe)
                                 buttons[x].change_text("X")
                                 player1_turn = False
                             else:
@@ -166,14 +169,24 @@ while running:
 
                                 # check the player turn and give the right player a point
                                 if not player1_turn:
-                                    print("X won")
                                     player1_score += 1
                                     player1.change_text("Player 1 ('X'): " + str(player1_score))
 
                                 else:
-                                    print("O won")
                                     player2_score += 1
                                     player2.change_text("Player 2 ('O'): " + str(player2_score))
+
+                                player1_turn = True
+
+                                for y in range(3):
+                                    for x in range(3):
+                                        tictactoe[y][x] = 0
+
+                            elif draw(tictactoe):
+
+                                # reset field
+                                for x in range(len(buttons)):
+                                    buttons[x].reset()
 
                                 player1_turn = True
 
