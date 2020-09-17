@@ -13,9 +13,9 @@ You win, if you filled...
 
 
 ## Still missing...
-I will try to update this project and implement as many features as possible, to learn the fundamentals of pygame and Python.
+I will try to update this project and implement as many features as possible, to learn the fundamentals of pygame and Python. 
 
 Things that are already on my list:
-- show a score for both players
+- show a score for both players :heavy_check_mark:
 - reset match when it ends in a draw
 - reset match and score through an option of the menu bar 

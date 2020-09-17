@@ -3,25 +3,25 @@ import pygame
 # initialize pygame
 pygame.init()
 
-# create pygame screen with the size of 500x250
-screen = pygame.display.set_mode((340, 340))
+# create pygame screen with the size of 340x400
+screen = pygame.display.set_mode((340, 400))
 
-# change whole background to rgb(0,0,0) -> white
+# change whole background to rgb(150,0,0) -> red
 screen.fill((150,0,0))
 
 # class knows screen variable
 class Button:
 
     # init function initalize the Button class
-    def __init__(self, color, x, y, width, height, arrayX, arrayY, text=''):
+    def __init__(self, color, x, y, width, height, arrayX, arrayY, fontSize=60):
         self.rgb = color
         self.y = y
         self.x = x
         self.width = width
         self.height = height
-        self.text = text
         self.arrayX = arrayX
         self.arrayY = arrayY
+        self.fontSize = fontSize
         self.draw()
 
     def draw(self):
@@ -29,23 +29,13 @@ class Button:
         # the zero at the end stands for no rounded corners
         pygame.draw.rect(screen, self.rgb, (self.x, self.y, self.width, self.height), 0)
 
-        if self.text != '':
-
-            # select font, size and color of text
-            font = pygame.font.SysFont('comicsans', 60)
-            text = font.render(self.text, 1, (0,0,0))
-
-            # the double slash is needed so that the solution of the division is a integer 
-            # blit function expects a integer value and not a float
-            screen.blit(text, (self.x + (self.width//2 - text.get_width()//2), self.y + (self.height//2 -text.get_height()//2)))
-
     # text function to control what is inside the rectangle
     def change_text(self, string):
             # refresh square (redraw it)
             self.draw()
 
             # select font, size and color of text
-            font = pygame.font.SysFont('comicsans', 60)
+            font = pygame.font.SysFont('comicsans', self.fontSize)
             text = font.render(string, 1, (0,0,0))
 
             # the double slash is needed so that the solution of the division is a integer 
@@ -97,6 +87,18 @@ for x in range(3):
     i = Button((255, 255, 255), 10+x*110, 230, 100, 100, 2, x)
     buttons.append(i)
 
+# create score labels
+player1 = Button((255, 255, 255), 10, 340, 320, 20, 0, 0, 25)
+player2 = Button((255, 255, 255), 10, 370, 320, 20, 0, 0, 25)
+
+# score for both players
+player1_score = 0
+player2_score = 0
+
+# change labels to equal the player score
+player1.change_text("Player 1 ('X'): " + str(player1_score))
+player2.change_text("Player 2 ('O'): " + str(player2_score))
+
 # true as long as the game runs
 running = True
 
@@ -145,9 +147,9 @@ while running:
                     if buttons[x].detect(pygame.mouse.get_pos()):
                         if(check(tictactoe, buttons[x].getArrayY(), buttons[x].getArrayX())):
                             if player1_turn:
-                                print(x)
+                                #print(x)
                                 tictactoe[buttons[x].getArrayY()][buttons[x].getArrayX()] = "X"
-                                print(tictactoe)
+                                #print(tictactoe)
                                 buttons[x].change_text("X")
                                 player1_turn = False
                             else:
@@ -157,9 +159,21 @@ while running:
                     
 
                             if win(tictactoe):
-                                #reset field
+                                
+                                # reset field
                                 for x in range(len(buttons)):
                                     buttons[x].reset()
+
+                                # check the player turn and give the right player a point
+                                if not player1_turn:
+                                    print("X won")
+                                    player1_score += 1
+                                    player1.change_text("Player 1 ('X'): " + str(player1_score))
+
+                                else:
+                                    print("O won")
+                                    player2_score += 1
+                                    player2.change_text("Player 2 ('O'): " + str(player2_score))
 
                                 player1_turn = True
 
