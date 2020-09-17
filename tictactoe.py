@@ -1,4 +1,5 @@
 import pygame 
+import numpy as np
 
 # initialize pygame
 pygame.init()
@@ -59,6 +60,72 @@ class Button:
     def getArrayY(self):
         return self.arrayY
 
+# check if this field is empty
+def check(field, x, y):
+
+    if field[x][y] == 0:
+        return True
+
+    return False
+
+# check if someone has won
+def win(field):
+    
+    # check rows
+    for y in range(3):
+        if field[y][0] == field[y][1] and field[y][0] == field[y][2] and field[y][0] != 0:
+            return True
+
+    # check columns
+    for x in range(3):
+        if field[0][x] == field[1][x] and field[0][x] == field[2][x] and field[0][x] != 0:
+            return True
+
+    # check diagonals
+    if field[0][0] == field[1][1] and field[0][0] == field[2][2] and field[0][0] != 0:
+        return True
+    elif field[0][2] == field[1][1] and field[0][2] == field[2][0] and field[0][2] != 0:
+        return True
+
+    return False
+
+# set X or O on the selected field
+def set(field, buttons, player1_turn):
+    if buttons.detect(pygame.mouse.get_pos()):
+        if(check(field, buttons.getArrayX(), buttons.getArrayY())):
+            if player1_turn:
+                field[buttons.getArrayX()][buttons.getArrayY()] = "X"
+                buttons.change_text("X")
+                player1_turn = False
+            else:
+                field[buttons.getArrayX()][buttons.getArrayY()] = "O"
+                buttons.change_text("O")
+                player1_turn = True
+    
+    return player1_turn
+
+# check for current gamestate: has somebody won or is it a draw?
+def gamestate(field, buttons):
+    won = False
+    
+    if win(field):
+        won = True
+    else:
+        for y in range(3):
+            for x in range(3):
+                if field[y][x] == 0:
+                    return False
+
+    # reset drawn field and array
+    for x in range(len(buttons)):
+        buttons[x].reset()
+
+    for y in range(3):
+        for x in range(3):
+            field[y][x] = 0
+
+    return won
+
 # change title
 pygame.display.set_caption("Tic Tac Toe")
 
@@ -66,8 +133,7 @@ pygame.display.set_caption("Tic Tac Toe")
 icon = pygame.image.load('tictactoe.png')
 pygame.display.set_icon(icon)
 
-
-#reimplent a lot of things with this kind of list...
+# prepare list for button objects
 buttons = []
 
 # first row
@@ -100,40 +166,6 @@ player2.change_text("Player 2 ('O'): " + str(player2_score))
 # true as long as the game runs
 running = True
 
-def check(field, x, y):
-    # check if the field is still empty
-    if field[x][y] == 0:
-        return True
-    return False
-
-def draw(field):
-    for y in range(3):
-        for x in range(3):
-            if field[x][y] == 0:
-                return False
-    return True
-
-def win(field):
-    
-    # check rows
-    for y in range(3):
-        if field[y][0] == field[y][1] and field[y][0] == field[y][2] and field[y][0] != 0:
-            return True
-
-    # check columns
-    for x in range(3):
-        if field[0][x] == field[1][x] and field[0][x] == field[2][x] and field[0][x] != 0:
-            return True
-
-    # check diagonals
-    if field[0][0] == field[1][1] and field[0][0] == field[2][2] and field[0][0] != 0:
-        return True
-    elif field[0][2] == field[1][1] and field[0][2] == field[2][0] and field[0][2] != 0:
-        return True
-
-    return False
-
-
 # playing field
 tictactoe = [[0, 0, 0],
              [0, 0, 0],
@@ -149,50 +181,19 @@ while running:
         elif event.type == pygame.MOUSEBUTTONDOWN:
             if pygame.mouse.get_pressed() == (1, 0, 0):
                 for x in range(9):
-                    if buttons[x].detect(pygame.mouse.get_pos()):
-                        if(check(tictactoe, buttons[x].getArrayY(), buttons[x].getArrayX())):
-                            if player1_turn:
-                                tictactoe[buttons[x].getArrayY()][buttons[x].getArrayX()] = "X"
-                                buttons[x].change_text("X")
-                                player1_turn = False
-                            else:
-                                tictactoe[buttons[x].getArrayY()][buttons[x].getArrayX()] = "O"
-                                buttons[x].change_text("O")
-                                player1_turn = True
-                    
+                    player1_turn = set(tictactoe, buttons[x], player1_turn)
 
-                            if win(tictactoe):
-                                
-                                # reset field
-                                for x in range(len(buttons)):
-                                    buttons[x].reset()
+                if gamestate(tictactoe, buttons):
+                    # check the player turn and give the right player a point
+                    if not player1_turn:
+                        player1_score += 1
+                        player1.change_text("Player 1 ('X'): " + str(player1_score))
+                        player1_turn = True
 
-                                # check the player turn and give the right player a point
-                                if not player1_turn:
-                                    player1_score += 1
-                                    player1.change_text("Player 1 ('X'): " + str(player1_score))
+                    else:
+                        player2_score += 1
+                        player2.change_text("Player 2 ('O'): " + str(player2_score))
+                        player1_turn = True    
 
-                                else:
-                                    player2_score += 1
-                                    player2.change_text("Player 2 ('O'): " + str(player2_score))
-
-                                player1_turn = True
-
-                                for y in range(3):
-                                    for x in range(3):
-                                        tictactoe[y][x] = 0
-
-                            elif draw(tictactoe):
-
-                                # reset field
-                                for x in range(len(buttons)):
-                                    buttons[x].reset()
-
-                                player1_turn = True
-
-                                for y in range(3):
-                                    for x in range(3):
-                                        tictactoe[y][x] = 0
-                                        
         # updates screen: must be called after everything has been drawn
         pygame.display.flip()
